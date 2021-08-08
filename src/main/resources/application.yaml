@@ -1,0 +1,17 @@
+server:
+  port: 1111
+  servlet:
+    contextPath: "/"
+
+spring:
+  datasource:
+    url: "jdbc:h2:mem:rasmoodb"
+    driverClassName: "org.h2.Driver"
+    username: "rasmoo"
+    password: "rasmoo"
+  jpa:
+    database:
+      platform: "org.hibernate.dialect.H2Dialect"
+  h2:
+    console:
+      enabled: true
