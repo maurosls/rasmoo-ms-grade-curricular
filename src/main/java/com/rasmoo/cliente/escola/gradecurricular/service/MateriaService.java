@@ -5,6 +5,9 @@ import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
 import com.rasmoo.cliente.escola.gradecurricular.exception.MateriaException;
 import com.rasmoo.cliente.escola.gradecurricular.repository.MateriaRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@CacheConfig(cacheNames = "materia")
 @Service
 public class MateriaService {
 
@@ -28,10 +32,15 @@ public class MateriaService {
         this.modelMapper = new ModelMapper();
     }
 
-    public boolean atualizaMateria (Long id, MateriaDto materiaDto){
+    //    @Caching(evict =
+    //            @CacheEvict{value = "materia", key="#materia.id"}
+    //            )
+    //    @CacheEvict(value = "materia", key="#materia.id")
+    @CacheEvict(key="#materia.id")
+    public boolean atualizaMateria (MateriaDto materia){
         try{
-            this.consultaMateria(id);
-            MateriaEntity materiaEntity = this.modelMapper.map(materiaDto, MateriaEntity.class);
+            this.consultaMateria(materia.getId());
+            MateriaEntity materiaEntity = this.modelMapper.map(materia, MateriaEntity.class);
             this.materiaRepository.save(materiaEntity);
             return true;
         } catch (MateriaException m){
@@ -41,6 +50,7 @@ public class MateriaService {
         }
     }
 
+    @CacheEvict(allEntries = true)
     public boolean criaMateria (MateriaDto materiaDto){
         try{
             MateriaEntity materiaEntity = this.modelMapper.map(materiaDto, MateriaEntity.class);
@@ -52,6 +62,7 @@ public class MateriaService {
         }
     }
 
+    @CacheEvict(allEntries = true)
     public boolean deletaMateria (Long id){
         try {
             this.consultaMateria(id);
@@ -64,6 +75,7 @@ public class MateriaService {
         return true;
     }
 
+    @Cacheable(unless = "#result.size()<3")
     public List<MateriaDto> listaMaterias (){
         return materiaRepository.findAll()
                 .stream()
@@ -71,6 +83,7 @@ public class MateriaService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(key="#id")
     public MateriaDto consultaMateria (Long id){
         try{
             Optional<MateriaEntity> materiaEntity = materiaRepository.findById(id);

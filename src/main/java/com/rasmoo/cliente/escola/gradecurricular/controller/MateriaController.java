@@ -33,9 +33,9 @@ public class MateriaController {
 		return ResponseEntity.status(HttpStatus.OK).body(materiaService.criaMateria(materiaDto));
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Boolean> atualizaMateria(@RequestBody @Valid MateriaDto materiaDto, @PathVariable Long id) {
-		return ResponseEntity.status(HttpStatus.OK).body(materiaService.atualizaMateria(id, materiaDto));
+	@PutMapping("/")
+	public ResponseEntity<Boolean> atualizaMateria(@RequestBody @Valid MateriaDto materiaDto) {
+		return ResponseEntity.status(HttpStatus.OK).body(materiaService.atualizaMateria(materiaDto));
 
 	}
 

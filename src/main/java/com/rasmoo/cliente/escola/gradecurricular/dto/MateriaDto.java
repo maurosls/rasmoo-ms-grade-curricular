@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class MateriaDto {
 
+    private long id;
 
     @NotBlank(message = "Informe o nome da matéria.")
     private String nome;
