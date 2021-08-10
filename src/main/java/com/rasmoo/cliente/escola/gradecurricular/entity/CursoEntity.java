@@ -1,20 +1,19 @@
 package com.rasmoo.cliente.escola.gradecurricular.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.context.annotation.Primary;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "materia")
+@Table(name = "curso")
 @Data
 @NoArgsConstructor
-public class MateriaEntity implements Serializable {
+public class CursoEntity implements Serializable {
 
     private static final long serialVersionUID = -922489302181456530L;
 
@@ -29,13 +28,11 @@ public class MateriaEntity implements Serializable {
     @Column(name = "name")
     private String nome;
 
-    @Column(name = "hrs")
-    private int horas;
-
     @Column(name = "cod")
     private String codigo;
 
-    @Column(name = "freq")
-    private int frequencia;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "materia_id")
+    private List<MateriaEntity> materias;
 
 }

@@ -1,5 +1,6 @@
 package com.rasmoo.cliente.escola.gradecurricular.service;
 
+import com.rasmoo.cliente.escola.gradecurricular.controller.MateriaController;
 import com.rasmoo.cliente.escola.gradecurricular.dto.MateriaDto;
 import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
 import com.rasmoo.cliente.escola.gradecurricular.exception.MateriaException;
@@ -8,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -77,10 +79,16 @@ public class MateriaService {
 
     @Cacheable(unless = "#result.size()<3")
     public List<MateriaDto> listaMaterias (){
-        return materiaRepository.findAll()
+        List<MateriaDto> materiaDtos = materiaRepository.findAll()
                 .stream()
                 .map(materia -> this.modelMapper.map(materia, MateriaDto.class))
                 .collect(Collectors.toList());
+        materiaDtos.forEach(materia -> {
+            materia.add(WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(MateriaController.class).consultaMateria(materia.getId()))
+                                 .withSelfRel());
+        });
+        return materiaDtos;
     }
 
     @Cacheable(key="#id")
@@ -98,5 +106,19 @@ public class MateriaService {
             throw new MateriaException(ERROR_INTERNAL, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public List<MateriaDto> consultaPorHorarioMinimo(int horaMinima) {
+        List<MateriaDto> materiaDtos = materiaRepository.findByHoraMinima(horaMinima)
+                .stream()
+                .map(materia -> this.modelMapper.map(materia, MateriaDto.class))
+                .collect(Collectors.toList());
+        materiaDtos.forEach(materia -> {
+            materia.add(WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(MateriaController.class).consultaMateria(materia.getId()))
+                                .withSelfRel());
+        });
+        return materiaDtos;
+    }
+
 }
 

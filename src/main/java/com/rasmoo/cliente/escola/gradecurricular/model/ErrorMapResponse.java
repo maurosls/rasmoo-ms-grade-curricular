@@ -11,5 +11,4 @@ public class ErrorMapResponse {
     private int httpStatus;
     private long timestamp;
     private Map<String,String> errors;
-
 }
